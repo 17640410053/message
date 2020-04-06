@@ -42,7 +42,8 @@ public class MailConsumer {
             log.info(mailFrom);
             mailMessage.setText(mailVo.getText());
             sender.send(mailMessage);
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
+            log.info("", e);
             log.info("邮件解析失败。。。");
         }
     }
