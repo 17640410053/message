@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -23,8 +24,11 @@ public class MailConsumer {
 
     @Value("${spring.mail.username}")
     private String mailFrom;
-    @Resource(name = "javaMailSender")
     private JavaMailSender sender;
+
+    public MailConsumer(JavaMailSender sender) {
+        this.sender = sender;
+    }
 
     @RabbitHandler
     public void consumerMailSend(String mailContext, Channel channel, Message message) {
@@ -35,6 +39,7 @@ public class MailConsumer {
             mailMessage.setTo(mailVo.getTo());
             mailMessage.setSubject(mailVo.getSubject());
             mailMessage.setFrom(mailFrom);
+            log.info(mailFrom);
             mailMessage.setText(mailVo.getText());
             sender.send(mailMessage);
         } catch (JsonProcessingException e) {
